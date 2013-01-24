@@ -6,6 +6,11 @@ module.exports = function (grunt) {
         dest: '.',
         options: { bare: false }
       },
+      extra: {
+        src: ['build/extra.coffee'],
+        dest: '.',
+        options: { bare: false }
+      },
       spec: {
         src: ['build/spec.coffee'],
         dest: 'build',
@@ -22,6 +27,9 @@ module.exports = function (grunt) {
         'lib/morris.bar.coffee',
         'lib/morris.donut.coffee'
       ],
+      'build/extra.coffee': [
+        'lib/extra.column.coffee'
+      ],
       'build/spec.coffee': ['spec/support/**/*.coffee', 'spec/lib/**/*.coffee']
     },
     less: {
@@ -34,7 +42,8 @@ module.exports = function (grunt) {
       }
     },
     min: {
-      'morris.min.js': 'morris.js'
+      'morris.min.js': 'morris.js',
+      'extra.min.js': 'extra.js'
     },
     mocha: {
       spec: {

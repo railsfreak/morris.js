@@ -17,6 +17,9 @@ class Morris.Grid extends Morris.EventEmitter
 
     @options = $.extend {}, @gridDefaults, (@defaults || {}), options
 
+    if @options.numYLabels == 'auto'
+      @options.numYLabels = @options.numLines
+
     # bail if there's no data
     if @options.data is undefined or @options.data.length is 0
       return
@@ -65,9 +68,11 @@ class Morris.Grid extends Morris.EventEmitter
     gridStrokeWidth: 0.5
     gridTextColor: '#888'
     gridTextSize: 12
+    gridTextWeight: 'normal'
     hideHover: false
     yLabelFormat: null
     numLines: 5
+    numYLabels: 'auto'
     padding: 25
     parseTime: true
     postUnits: ''
@@ -203,8 +208,8 @@ class Morris.Grid extends Morris.EventEmitter
       @bottom = @elementHeight - @options.padding
       if @options.axes
         maxYLabelWidth = Math.max(
-          @measureText(@yAxisFormat(@ymin), @options.gridTextSize).width,
-          @measureText(@yAxisFormat(@ymax), @options.gridTextSize).width)
+          @measureText(@yAxisFormat(@ymin), @options.gridTextSize, @options.gridTextWeight).width,
+          @measureText(@yAxisFormat(@ymax), @options.gridTextSize, @options.gridTextWeight).width)
         @left += maxYLabelWidth
         @bottom -= 1.5 * @options.gridTextSize
       @width = @right - @left
@@ -255,14 +260,20 @@ class Morris.Grid extends Morris.EventEmitter
     return if @options.grid is false and @options.axes is false
     firstY = @ymin
     lastY = @ymax
+
+    labelInterval = Math.ceil(@options.numLines / @options.numYLabels)
+
+    i = 0;
     for lineY in [firstY..lastY] by @yInterval
       v = parseFloat(lineY.toFixed(@precision))
       y = @transY(v)
       if @options.axes
-        @r.text(@left - @options.padding / 2, y, @yAxisFormat(v))
-          .attr('font-size', @options.gridTextSize)
-          .attr('fill', @options.gridTextColor)
-          .attr('text-anchor', 'end')
+        if i++ % labelInterval == 0
+          @r.text(@left - @options.padding / 2, y, @yAxisFormat(v))
+            .attr('font-size', @options.gridTextSize)
+            .attr('font-weight', @options.gridTextWeight)
+            .attr('fill', @options.gridTextColor)
+            .attr('text-anchor', 'end')
       if @options.grid
         @r.path("M#{@left},#{y}H#{@left + @width}")
           .attr('stroke', @options.gridLineColor)
@@ -270,8 +281,8 @@ class Morris.Grid extends Morris.EventEmitter
 
   # @private
   #
-  measureText: (text, fontSize = 12) ->
-    tt = @r.text(100, 100, text).attr('font-size', fontSize)
+  measureText: (text, fontSize = 12, fontWeight = 'normal') ->
+    tt = @r.text(100, 100, text).attr('font-size', fontSize, 'font-weight', fontWeight)
     ret = tt.getBBox()
     tt.remove()
     ret

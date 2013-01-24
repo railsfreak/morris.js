@@ -1,0 +1,50 @@
+<!doctype html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="https://raw.github.com/DmitryBaranovskiy/raphael/300aa589f5a0ba7fce667cd62c7cdda0bd5ad904/raphael-min.js"></script>
+  <script src="../morris.js"></script>
+  <script src="../extra.js"></script>
+  <script src="lib/prettify.js"></script>
+  <script src="lib/example.js"></script>
+  <link rel="stylesheet" href="lib/example.css">
+  <link rel="stylesheet" href="lib/prettify.css">
+  <link rel="stylesheet" href="../morris.css">
+</head>
+<body>
+<h1>Custom column chart</h1>
+<div id="graph" style="width:300px;height:150px;"></div>
+<pre id="code" class="prettyprint linenums">
+var data = {
+  '1M': 0.2504,
+  '3M': -0.6916,
+  '6M': 0.7020,
+  '1Y': -0.0445,
+  '3Y': 0.5849,
+  '5Y': 0.7928
+};
+
+var chart = new Extra.Column({
+  data: data,
+  element: '#graph',
+  precision: 0
+});
+
+var inversed = function(){
+  chart.update({
+    '1M': -0.2504,
+  '3M': 0.6916,
+  '6M': -0.7020,
+  '1Y': 0.0445,
+  '3Y': -0.5849,
+  '5Y': -0.8228
+  });
+};
+
+var regular = function(){
+  chart.update(data);
+};
+
+setInterval(inversed, 4000);
+setTimeout(function(){ setInterval(regular, 4000); }, 2000);
+</pre>
+</body>

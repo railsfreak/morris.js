@@ -81,6 +81,9 @@
         this.el.css('position', 'relative');
       }
       this.options = $.extend({}, this.gridDefaults, this.defaults || {}, options);
+      if (this.options.numYLabels === 'auto') {
+        this.options.numYLabels = this.options.numLines;
+      }
       if (this.options.data === void 0 || this.options.data.length === 0) {
         return;
       }
@@ -123,9 +126,11 @@
       gridStrokeWidth: 0.5,
       gridTextColor: '#888',
       gridTextSize: 12,
+      gridTextWeight: 'normal',
       hideHover: false,
       yLabelFormat: null,
       numLines: 5,
+      numYLabels: 'auto',
       padding: 25,
       parseTime: true,
       postUnits: '',
@@ -297,7 +302,7 @@
         this.top = this.options.padding;
         this.bottom = this.elementHeight - this.options.padding;
         if (this.options.axes) {
-          maxYLabelWidth = Math.max(this.measureText(this.yAxisFormat(this.ymin), this.options.gridTextSize).width, this.measureText(this.yAxisFormat(this.ymax), this.options.gridTextSize).width);
+          maxYLabelWidth = Math.max(this.measureText(this.yAxisFormat(this.ymin), this.options.gridTextSize, this.options.gridTextWeight).width, this.measureText(this.yAxisFormat(this.ymax), this.options.gridTextSize, this.options.gridTextWeight).width);
           this.left += maxYLabelWidth;
           this.bottom -= 1.5 * this.options.gridTextSize;
         }
@@ -357,18 +362,22 @@
     };
 
     Grid.prototype.drawGrid = function() {
-      var firstY, lastY, lineY, v, y, _i, _ref, _results;
+      var firstY, i, labelInterval, lastY, lineY, v, y, _i, _ref, _results;
       if (this.options.grid === false && this.options.axes === false) {
         return;
       }
       firstY = this.ymin;
       lastY = this.ymax;
+      labelInterval = Math.ceil(this.options.numLines / this.options.numYLabels);
+      i = 0;
       _results = [];
       for (lineY = _i = firstY, _ref = this.yInterval; firstY <= lastY ? _i <= lastY : _i >= lastY; lineY = _i += _ref) {
         v = parseFloat(lineY.toFixed(this.precision));
         y = this.transY(v);
         if (this.options.axes) {
-          this.r.text(this.left - this.options.padding / 2, y, this.yAxisFormat(v)).attr('font-size', this.options.gridTextSize).attr('fill', this.options.gridTextColor).attr('text-anchor', 'end');
+          if (i++ % labelInterval === 0) {
+            this.r.text(this.left - this.options.padding / 2, y, this.yAxisFormat(v)).attr('font-size', this.options.gridTextSize).attr('font-weight', this.options.gridTextWeight).attr('fill', this.options.gridTextColor).attr('text-anchor', 'end');
+          }
         }
         if (this.options.grid) {
           _results.push(this.r.path("M" + this.left + "," + y + "H" + (this.left + this.width)).attr('stroke', this.options.gridLineColor).attr('stroke-width', this.options.gridStrokeWidth));
@@ -379,12 +388,15 @@
       return _results;
     };
 
-    Grid.prototype.measureText = function(text, fontSize) {
+    Grid.prototype.measureText = function(text, fontSize, fontWeight) {
       var ret, tt;
       if (fontSize == null) {
         fontSize = 12;
       }
-      tt = this.r.text(100, 100, text).attr('font-size', fontSize);
+      if (fontWeight == null) {
+        fontWeight = 'normal';
+      }
+      tt = this.r.text(100, 100, text).attr('font-size', fontSize, 'font-weight', fontWeight);
       ret = tt.getBBox();
       tt.remove();
       return ret;
@@ -1183,7 +1195,7 @@
       _results = [];
       for (i = _i = 0, _ref = this.data.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         row = this.data[this.data.length - 1 - i];
-        label = this.r.text(row._x, ypos, row.label).attr('font-size', this.options.gridTextSize).attr('fill', this.options.gridTextColor);
+        label = this.r.text(row._x, ypos, row.label).attr('font-size', this.options.gridTextSize).attr('font-weight', this.options.gridTextWeight).attr('fill', this.options.gridTextColor);
         labelBox = label.getBBox();
         if ((!(prevLabelMargin != null) || prevLabelMargin >= labelBox.x + labelBox.width) && labelBox.x >= 0 && (labelBox.x + labelBox.width) < this.el.width()) {
           _results.push(prevLabelMargin = labelBox.x - this.options.xLabelMargin);

@@ -61,6 +61,7 @@ class Morris.Bar extends Morris.Grid
       row = @data[@data.length - 1 - i]
       label = @r.text(row._x, ypos, row.label)
         .attr('font-size', @options.gridTextSize)
+        .attr('font-weight', @options.gridTextWeight)
         .attr('fill', @options.gridTextColor)
       labelBox = label.getBBox()
       # ensure a minimum of `xLabelMargin` pixels between labels, and ensure
