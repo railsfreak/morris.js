@@ -8,6 +8,8 @@ class Extra.Column extends Morris.EventEmitter
     negativeTextColor: '#777777'
     precision: 2
     lines: 9
+    barGap: 50
+    barSizeRatio: 0.5
 
   constructor: (options) ->
     @el = $ options.element
@@ -41,8 +43,8 @@ class Extra.Column extends Morris.EventEmitter
       data: @data
       ymin: ymin
       ymax: ymax
-      barGap: 50
-      barSizeRatio: .5
+      barGap: @options.barGap
+      barSizeRatio: @options.barSizeRatio
       hideHover: 'always'
       numLines: @options.lines
       numYLabels: Math.floor(@options.lines/2) + 1

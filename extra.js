@@ -15,7 +15,9 @@
       positiveTextColor: '#ff4400',
       negativeTextColor: '#777777',
       precision: 2,
-      lines: 9
+      lines: 9,
+      barGap: 50,
+      barSizeRatio: 0.5
     };
 
     function Column(options) {
@@ -50,8 +52,8 @@
         data: this.data,
         ymin: ymin,
         ymax: ymax,
-        barGap: 50,
-        barSizeRatio: .5,
+        barGap: this.options.barGap,
+        barSizeRatio: this.options.barSizeRatio,
         hideHover: 'always',
         numLines: this.options.lines,
         numYLabels: Math.floor(this.options.lines / 2) + 1,
