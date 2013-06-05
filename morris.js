@@ -1577,7 +1577,7 @@
     };
 
     Donut.prototype.select = function(idx) {
-      var row, s, segment, _i, _len, _ref;
+      var row, s, segment, _i, _len, _ref, _fill_color;
       _ref = this.segments;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         s = _ref[_i];
@@ -1586,18 +1586,21 @@
       segment = this.segments[idx];
       segment.select();
       row = this.data[idx];
-      return this.setLabels(row.label, this.options.formatter(row.value, row));
+      _fill_color = this.data[idx].labelColor || this.options.defaultLabelColor || '#000000'; 
+      return this.setLabels(row.label, this.options.formatter(row.value, row), _fill_color);
     };
 
-    Donut.prototype.setLabels = function(label1, label2) {
+    Donut.prototype.setLabels = function(label1, label2, fill_color) {
       var inner, maxHeightBottom, maxHeightTop, maxWidth, text1bbox, text1scale, text2bbox, text2scale;
+      _default_fill = fill_color || '#000000' ; 
       inner = (Math.min(this.el.width() / 2, this.el.height() / 2) - 10) * 2 / 3;
       maxWidth = 1.8 * inner;
       maxHeightTop = inner / 2;
       maxHeightBottom = inner / 3;
       this.text1.attr({
         text: label1,
-        transform: ''
+        transform: '',
+        fill: fill_color
       });
       text1bbox = this.text1.getBBox();
       text1scale = Math.min(maxWidth / text1bbox.width, maxHeightTop / text1bbox.height);
@@ -1606,7 +1609,8 @@
       });
       this.text2.attr({
         text: label2,
-        transform: ''
+        transform: '',
+        fill: fill_color
       });
       text2bbox = this.text2.getBBox();
       text2scale = Math.min(maxWidth / text2bbox.width, maxHeightBottom / text2bbox.height);
